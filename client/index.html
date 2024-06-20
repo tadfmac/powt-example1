@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="jp">
+<head>
+<meta charset="UTF-8" />
+<link rel="icon" href="/favicon.ico" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>powt test</title>
+</head>
+<body>
+<div id="statusWrap">
+  <div id="status"></div>
+  <div id="ramp"></div>
+</div>
+<div id="trigWrap">
+  <div id="trigCheen" class="trigButton">cheen</div>
+  <div id="trigChicken" class="trigButton">chicken</div>
+  <div id="trigText" class="trigButton">text</div>
+</div>
+<div id="log"></div>
+<style>
+*{
+  padding:0px;
+  margin:0px;
+  box-sizing: border-box;
+}
+html{
+  height:100%;
+  width:100%;
+}
+body{
+  height:100%;
+  width:100%;
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size: cover;
+}
+.hide{
+  display:none!important;
+}
+#statusWrap{
+  position:fixed;
+  right:10px;
+  top:10px;
+  width:180px;
+  height:30px;
+  display: flex;
+  flex-direction: row;
+}
+#ramp{
+  width:30px;
+  height:30px;
+  border-radius: 30px;
+}
+#status{
+  padding-right:10px;
+  width:150px;
+  font-size:20px;
+  line-height:30px;
+  vertical-align: middle;
+  text-align:right;
+}
+#trigWrap{
+  position:fixed;
+  left:0px;
+  bottom:10px;
+  width:100%;
+  height:30px;
+  display: flex;
+  flex-direction: row;
+  justify-content:center;
+}
+.trigButton{
+  width:100px;
+  height:30px;
+  font-size:16px;
+  line-height: 30px;
+  text-align: center;
+  background-color:pink;
+  margin:0px 20px;
+  cursor:pointer;
+}
+.connected{
+  background-color:cyan!important;
+}
+.disconnected{
+  background-color:magenta!important;
+}
+#log{
+  width:100%;
+  height:200px;
+  font-size:12px;
+}
+</style>
+<script type="module">
+import protocol from "./common/protocol.mjs";
+import powt from "./lib/powt.mjs";
+import testtext from "./testtext.mjs";
+import LOG from "./lib/log.mjs";
+
+////////////////////////////////////////////////////
+// DOM Event handlers
+////////////////////////////////////////////////////
+let $startMes = document.querySelector("#startMes");
+let $ramp = document.querySelector("#ramp");
+let $status = document.querySelector("#status");
+
+let $trigCheen = document.querySelector("#trigCheen");
+let $trigChicken = document.querySelector("#trigChicken");
+let $trigText = document.querySelector("#trigText");
+
+let $log = document.querySelector("#log");
+const Log = new LOG($log);
+
+let myId = null;
+
+function changeConnectionDisp(){
+  if(wt.status == "disconnected"){
+    $ramp.classList.add("disconnected");
+    $ramp.classList.remove("connected");
+    $status.innerHTML = "disconnected..";
+
+  }else{
+    $ramp.classList.add("connected");
+    $ramp.classList.remove("disconnected");
+    $status.innerHTML = "connected!";
+  }
+}
+
+$trigCheen.onclick = async function(e){
+  Log.out("$trigCheen.onclick()");
+  let uint8Arr = protocol.encode("cheen",myId,"00000000");
+  await wt.sendDgram(uint8Arr);
+};
+
+$trigChicken.onclick = async function(e){
+  Log.out("$trigChicken.onclick()");
+  let uint8Arr = protocol.encode("jreen",myId,"00000000");
+  await wt.sendDgram(uint8Arr);
+};
+
+$trigText.onclick = async function(e){
+  let text = testtext.getLong();
+  let partText = (text.length > 20)? text.substr(0,20)+"..." : text;
+  Log.out("$trigText.onclick() text="+partText);
+  let uint8Arr = protocol.encode("text",myId,"00000000",text);
+  await wt.send(uint8Arr);
+};
+
+////////////////////////////////////////////////////
+// WebTransport 
+////////////////////////////////////////////////////
+const ENDPOINT = `https://${window.location.hostname}:${window.location.port}`;
+const wt = new powt();
+
+async function received(value){
+  let data = protocol.parse(value);
+  Log.out(">>>>> "+data.type+" event received!");
+  switch(data.type){
+  case "myId":
+    Log.out("myId received! id="+data.id);
+    myId = data.id;
+    break;
+  case "cheen":
+    Log.out("cheen received!");
+    break;
+  case "jreen":
+    Log.out("jreen received!");
+    break;
+  case "text":
+    let partText = (data.text.length > 20)? data.text.substr(0,20)+"..." : data.text;
+    Log.out("text received! text="+partText);
+    break;
+  default:break;
+  }
+}
+
+let retryInterval = null;
+
+function onStatusChange(_status){
+  Log.out("onStatusChange() : status="+_status);
+  changeConnectionDisp();
+  if(_status == "disconnected"){
+    if(!retryInterval){
+      retryInterval = setInterval(async (e)=>{
+        await wt.connect(ENDPOINT);
+      },5000);
+    }
+  }else{
+    if(retryInterval){
+      clearInterval(retryInterval);
+      retryInterval = null;
+    }
+  }
+}
+
+async function startConnection(){
+  Log.out("startConnection()");
+  wt.on("datagram",received);
+  wt.on("stream",received);
+  wt.on("status",onStatusChange);
+  await wt.connect(ENDPOINT);
+  Log.out("connected!");
+}
+
+if(!wt.available()){
+  Log.out("webTransport unsupported!");
+}else{
+  Log.out("webTransport supported!");
+  await startConnection();
+}
+
+</script>
+</body>
+</html>

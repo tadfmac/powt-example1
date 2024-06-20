@@ -1,0 +1,21 @@
+{
+  "name": "powt-example",
+  "version": "0.0.2",
+  "description": "powt example application",
+  "main": "app.mjs",
+  "author": "D.F.Mac.@TripArts Music",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tadfmac/powt.git"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "powt": "^0.0.9"
+  },
+  "bugs": {
+    "url": "https://github.com/tadfmac/powt/issues"
+  }
+}
