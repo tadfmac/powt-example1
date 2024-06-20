@@ -1,6 +1,6 @@
 # powt-example1
 
-![English](../README.md)
+[English](../README.md)
 
 [powt](https://github.com/tadfmac/powt) WebTransport サーバー及びクライアントJavascriptライブラリのシンプルなアプリケーション例です。
 

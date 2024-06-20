@@ -1,6 +1,6 @@
 # powt-example1
 
-![日本語](./ja/README.md)
+[日本語](./ja/README.md)
 
 An simple example application of [powt](https://github.com/tadfmac/powt) that WebTransport server and client javascript wrapper library.
 
