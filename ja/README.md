@@ -50,7 +50,7 @@ npm i
 node ./app.mjs
 ```
 
-## ブラウザflag `WebTransport Developer Mode`の有効化
+## 5. ブラウザflag `WebTransport Developer Mode`の有効化
 
 ブラウザ (ChromeかChromeベースのブラウザーに限ります) のアドレスバーに、以下のURLを入力してください。
 
