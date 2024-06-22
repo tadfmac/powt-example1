@@ -2,7 +2,7 @@
 
 [English](../README.md)
 
-[powt](https://github.com/tadfmac/powt) WebTransport サーバー及びクライアントJavascriptライブラリのシンプルなアプリケーション例です。
+[powt](https://github.com/tadfmac/powt) WebTransport サーバー及びクライアントJavascriptライブラリを用いたシンプルなアプリケーションの例です。
 
 # 利用方法
 
@@ -18,7 +18,7 @@ HTTPS経由の場合:
 git clone https://github.com/tadfmac/powt-example1.git
 ```
 
-または、直接このサイトから直接zipファイルをダウンロード後、zip解凍の上、フォルダ名を`powt-example1-main`から`powt-example1`に変更することもできます。
+または、直接このサイトからzipファイルをダウンロード後、zip解凍の上、フォルダ名を`powt-example1-main`から`powt-example1`に変更してください。
 
 ## 1. mkcertのインストール
 
@@ -70,7 +70,7 @@ opera://flags
 webtransport
 ```
 
-フラグ名「WebTransport Developer Mode」が見つかったら、それを「enabled」に変更する必要があります。
+フラグ名「WebTransport Developer Mode」が見つかったら「enabled」に変更してください。
 変更後、ブラウザを再起動します。
 
 ## 6. クライアントアプリケーションへのアクセス
