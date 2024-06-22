@@ -11,17 +11,37 @@
   <div id="status"></div>
   <div id="ramp"></div>
 </div>
-<div id="trigWrap">
-  <div id="trigCheen" class="trigButton">cheen</div>
-  <div id="trigChicken" class="trigButton">chicken</div>
-  <div id="trigText" class="trigButton">text</div>
-</div>
 <div id="log"></div>
+<div id="trigWrap">
+  <div class="trigline">
+    <div class="lineLabel">myID:</div>
+    <div class="linebody">
+      <div id="myID"></div>
+    </div>
+  </div>
+  <div class="trigline">
+    <div class="lineLabel">target:</div>
+    <div class="linebody">
+      <select id="target">
+        <option value="00000000">broadcast</option>
+      </select>
+    </div>
+  </div>
+  <div class="trigline">
+    <div class="lineLabel">events:</div>
+    <div class="linebody">
+      <button id="trigCheen" class="trigButton">cheen</button>
+      <button id="trigChicken" class="trigButton">chicken</button>
+      <button id="trigText" class="trigButton">text</button>
+    </div>
+  </div>
+</div>
 <style>
 *{
   padding:0px;
   margin:0px;
   box-sizing: border-box;
+  font-family: "Gill Sans", sans-serif;
 }
 html{
   height:100%;
@@ -61,23 +81,61 @@ body{
 }
 #trigWrap{
   position:fixed;
-  left:0px;
+  right:10px;
   bottom:10px;
-  width:100%;
-  height:30px;
+  width:280px;
+  height:130px;
+  padding:10px;
   display: flex;
-  flex-direction: row;
-  justify-content:center;
+  flex-direction:column;
+  background-color:rgb(0,256,196);
+}
+.trigline, .linebody{
+  display: flex;
+  flex-direction:row;
+}
+.trigline{
+  width:260px;
+  margin-bottom: 10px;
+  justify-content:flex-start;
+}
+.linebody{
+  width:220px;
+  justify-content:space-between
+}
+#target{
+  width:204px;
+  border:0px;
+}
+#myID{
+  height:30px;
+  font-size:16px;
+  line-height: 30px;
+  vertical-align: middle;
+  color:deeppink;
+  font-weight: bold;
 }
 .trigButton{
-  width:100px;
+  width:60px;
   height:30px;
   font-size:16px;
   line-height: 30px;
   text-align: center;
   background-color:pink;
-  margin:0px 20px;
   cursor:pointer;
+  border:0px;
+}
+.lineLabel{
+  display:block;
+  width:50px;
+  height:30px;
+  font-size:16px;
+  line-height: 30px;
+  text-align: left;
+  margin-right:10px;
+}
+.trigButton:hover{
+  background-color:deeppink;
 }
 .connected{
   background-color:cyan!important;
@@ -108,6 +166,9 @@ let $trigCheen = document.querySelector("#trigCheen");
 let $trigChicken = document.querySelector("#trigChicken");
 let $trigText = document.querySelector("#trigText");
 
+let $myID = document.querySelector("#myID");
+let $target = document.querySelector("#target");
+
 let $log = document.querySelector("#log");
 const Log = new LOG($log);
 
@@ -128,13 +189,13 @@ function changeConnectionDisp(){
 
 $trigCheen.onclick = async function(e){
   Log.out("$trigCheen.onclick()");
-  let uint8Arr = protocol.encode("cheen",myId,"00000000");
+  let uint8Arr = protocol.encode("cheen",myId,getTarget());
   await wt.sendDgram(uint8Arr);
 };
 
 $trigChicken.onclick = async function(e){
   Log.out("$trigChicken.onclick()");
-  let uint8Arr = protocol.encode("jreen",myId,"00000000");
+  let uint8Arr = protocol.encode("jreen",myId,getTarget());
   await wt.sendDgram(uint8Arr);
 };
 
@@ -142,9 +203,17 @@ $trigText.onclick = async function(e){
   let text = testtext.getLong();
   let partText = (text.length > 20)? text.substr(0,20)+"..." : text;
   Log.out("$trigText.onclick() text="+partText);
-  let uint8Arr = protocol.encode("text",myId,"00000000",text);
+  let uint8Arr = protocol.encode("text",myId,getTarget(),text);
   await wt.send(uint8Arr);
 };
+
+function getTarget(){
+  let value = $target.value;
+  if(value == null || value == undefined){
+    value = "00000000";
+  }
+  return value;
+}
 
 ////////////////////////////////////////////////////
 // WebTransport 
@@ -159,6 +228,10 @@ async function received(value){
   case "myId":
     Log.out("myId received! id="+data.id);
     myId = data.id;
+    $myID.innerHTML = myId;
+    break;
+  case "idList":
+    onIdList(data.ids);
     break;
   case "cheen":
     Log.out("cheen received!");
@@ -175,6 +248,25 @@ async function received(value){
 }
 
 let retryInterval = null;
+
+function onIdList(idList){
+  Log.out("idList received! : "+idList);
+  $target.innerHTML = "";
+  let $option = document.createElement('option');
+  $option.value = "00000000";
+  $option.text = "broadcast";
+  $target.appendChild($option);
+
+  for(let cnt=0;cnt<idList.length;cnt ++){
+    if(idList[cnt] == myId){
+      continue;
+    }
+    let $option = document.createElement('option');
+    $option.value = idList[cnt];
+    $option.text = idList[cnt];
+    $target.appendChild($option)
+  }
+}
 
 function onStatusChange(_status){
   Log.out("onStatusChange() : status="+_status);
