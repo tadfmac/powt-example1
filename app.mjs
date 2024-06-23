@@ -56,11 +56,11 @@ async function onReceived(uint8Arr,id){
 function onNewSession(id){
   Log.out("onNewSession() id="+id);
   let uint8Arr = protocol.encode("myId",id);
-  powtServer.sendDgram(id,uint8Arr);
+  powtServer.send(id,uint8Arr);
   setTimeout(()=>{
     let ids = powtServer.getSessionIds();
     let arr = protocol.encode("idList",ids);
-    powtServer.broadcastDgram(arr);
+    powtServer.broadcast(arr);
   },100);
 }
 
@@ -68,5 +68,5 @@ function onCloseSession(id){
   Log.out("onCloseSession() id="+id);
   let ids = powtServer.getSessionIds();
   let uint8Arr = protocol.encode("idList",ids);
-  powtServer.broadcastDgram(uint8Arr);
+  powtServer.broadcast(uint8Arr);
 }
