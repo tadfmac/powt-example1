@@ -1,6 +1,6 @@
 {
   "name": "powt-example1",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "An example application of powt that webtransport js wrapper library.",
   "main": "app.mjs",
   "author": "D.F.Mac.@TripArts Music",
