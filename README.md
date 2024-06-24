@@ -31,6 +31,7 @@ Please see bellow :
 
 ```
 cd powt-example/cert
+mkcert --install
 mkcert localhost
 ls
 ```

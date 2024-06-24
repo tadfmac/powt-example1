@@ -31,6 +31,7 @@ git clone https://github.com/tadfmac/powt-example1.git
 
 ```
 cd powt-example/cert
+mkcert --install
 mkcert localhost
 ls
 ```
