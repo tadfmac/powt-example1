@@ -1,6 +1,6 @@
 {
   "name": "powt-example1",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "An example application of powt that webtransport js wrapper library.",
   "main": "app.mjs",
   "author": "D.F.Mac.@TripArts Music",
@@ -13,7 +13,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "powt": "^0.0.9"
+    "powt": "^0.1.0"
   },
   "bugs": {
     "url": "https://github.com/tadfmac/powt-example1/issues"
